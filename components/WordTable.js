@@ -1,106 +1,65 @@
 "use client";
 
-// components/WordTable.js
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { getWords, deleteWord } from '@/lib/words';
+import React from 'react';
+import { deleteWord, toggleWordMemorized } from '@/lib/words';
 import styles from './WordTable.module.css';
 
-export default function WordTable({filter = 'all'}) {
-  
-  const [words, setWords] = useState([]);
-  const [checkedWords, setCheckedWords] = useState({});
-
-  const loadWords = () => {
-    const storedWords = getWords();
-    setWords(storedWords);
-
-    const storedChecked = localStorage.getItem('checkedWords');
-    if (storedChecked) {
-      setCheckedWords(JSON.parse(storedChecked));
-    }
-  };
-
-  useEffect(() => {
-    loadWords();
-    window.addEventListener('word-updated', loadWords);
-    return () => window.removeEventListener('word-updated', loadWords);
-  }, []);
-
-  const handleCheck = (wordId) => {
-    const newCheckedWords = { ...checkedWords, [wordId]: !checkedWords[wordId] };
-    setCheckedWords(newCheckedWords);
-    localStorage.setItem('checkedWords', JSON.stringify(newCheckedWords));
-  };
+export default function WordTable({ words, wordbookName }) {
 
   const handleDelete = (wordId) => {
-    deleteWord(wordId);
-    const newCheckedWords = { ...checkedWords };
-    delete newCheckedWords[wordId];
-    setCheckedWords(newCheckedWords);
-    localStorage.setItem('checkedWords', JSON.stringify(newCheckedWords));
+    if (confirm('이 단어를 정말 삭제하시겠습니까?')) {
+      deleteWord(wordId, wordbookName);
+    }
   };
 
-  // ✨ filteredWords : 모든 단어, 암기한 단어, 외우지 않은 단어 필터링 
-  const filteredWords = words.filter(word => {
-    if (filter === 'memorized') {
-      return checkedWords[word.id];
-    }
-    if (filter === 'unmemorized') {
-      return !checkedWords[word.id];
-    }
-    return true; 
-  });
+  const handleToggleMemorized = (wordId) => {
+    toggleWordMemorized(wordId, wordbookName);
+  };
 
-
-  if (words.length === 0) {
-    return (
-      <div className={styles.tableContainer}>
-        <Link href="/" className={styles.link}>메인으로 돌아가기</Link>
-        <div className={styles.emptyMessage}>등록된 단어가 없습니다.</div>
-      </div>
-    );
+  if (!words || words.length === 0) {
+    return <p>단어장에 단어가 없습니다. 위에서 단어를 추가해보세요.</p>;
   }
 
   return (
-    <div className={styles.tableContainer}>
-      <Link href="/" className={styles.link}>메인으로 돌아가기</Link>
-      <table className={styles.table}>
-        <thead>
-          <tr className={styles.tr}>
-            <th className={styles.th}></th>
-            <th className={styles.th}>번호</th>
-            <th className={styles.th}>단어</th>
-            <th className={styles.th}>발음</th>
-            <th className={styles.th}>뜻</th>
-            <th className={styles.th}>추가된 날짜</th>
-            <th className={styles.th}>삭제</th>
+    <table className={styles.table}>
+      <thead>
+        <tr>
+          <th className={styles.thNumber}>번호</th>
+          <th className={styles.thCheck}>암기</th>
+          <th>단어</th>
+          <th>뜻</th>
+          <th className={styles.thDate}>생성일</th>
+          <th className={styles.thAction}>삭제</th>
+        </tr>
+      </thead>
+      <tbody>
+        {words.map((word, index) => (
+          <tr key={word.id} className={word.isMemorized ? styles.memorizedRow : ''}>
+            <td className={styles.tdCenter}>{index + 1}</td>
+            <td className={styles.tdCenter}>
+              <input
+                type="checkbox"
+                checked={word.isMemorized || false}
+                onChange={() => handleToggleMemorized(word.id)}
+                className={styles.checkbox}
+              />
+            </td>
+            <td>{word.word}</td>
+            <td>{word.meaning}</td>
+            <td className={styles.tdCenter}>
+              {word.createdAt ? new Date(word.createdAt).toLocaleDateString() : 'N/A'}
+            </td>
+            <td className={styles.tdCenter}>
+              <button 
+                onClick={() => handleDelete(word.id)}
+                className={styles.deleteButton}
+              >
+                삭제
+              </button>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {filteredWords.map((w, index) => (
-            <tr key={w.id} className={`${styles.tr} ${checkedWords[w.id] ? styles.checkedTr : ''}`}>
-
-              <td className={styles.td}>
-                <input 
-                  type="checkbox" 
-                  checked={!!checkedWords[w.id]}
-                  onChange={() => handleCheck(w.id)}
-                />
-              </td>
-
-              <td className={styles.td}>{index + 1}</td>
-              <td className={styles.td}>{w.word}</td>
-              <td className={styles.td}>{w.pronunciation}</td>
-              <td className={styles.td}>{w.meaning}</td>
-              <td className={styles.td}>{new Date(w.createdAt).toLocaleDateString()}</td>
-              <td className={styles.td}>
-                <button onClick={() => handleDelete(w.id)} className={styles.deleteButton}>삭제</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        ))}
+      </tbody>
+    </table>
   );
 }

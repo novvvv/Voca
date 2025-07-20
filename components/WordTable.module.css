@@ -1,79 +1,80 @@
-.tableContainer {
-  margin-top: 20px;
-}
-
-.link {
-  display: inline-block;
-  margin-bottom: 15px;
-  padding: 8px 15px;
-  background-color: #0070f3;
-  color: white;
-  text-decoration: none;
-  border-radius: 5px;
-  font-size: 1rem;
-}
-
-.link:hover {
-  background-color: #005bb5;
-}
+/* components/WordTable.module.css */
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  font-size: 1.1rem;
+  margin-top: 2rem;
+  background-color: #fff;
+  border-radius: var(--border-radius);
+  overflow: hidden; /* Ensures border-radius is applied to corners */
+  border: 1px solid rgb(var(--tile-border));
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-.th {
-  background-color: #f2f2f2;
-  padding: 12px;
-  border: 1px solid #ddd;
+.table th, .table td {
+  padding: 12px 15px;
   text-align: left;
+  border-bottom: 1px solid rgb(var(--tile-border));
+  vertical-align: middle;
+}
+
+.table th {
+  background-color: #f8f9fa; /* Light gray for header */
   font-weight: bold;
+  color: var(--foreground-rgb);
 }
 
-.td {
-  padding: 12px;
-  border: 1px solid #ddd;
-  text-align: left;
+/* Column-specific styles */
+.thNumber { width: 5%; }
+.thCheck { width: 5%; }
+.thDate { width: 15%; }
+.thAction { width: 10%; }
+
+.tdCenter {
+  text-align: center;
 }
 
-.tr:nth-child(even) {
-  background-color: #f9f9f9;
+.table tbody tr:last-child td {
+  border-bottom: none;
 }
 
-.tr:hover {
-  background-color: #f1f1f1;
+.table tbody tr:hover {
+  background-color: #f1f3f5; /* Slightly darker gray on hover */
 }
 
-.checkedTr {
-  background-color: #d3d3d3; /* 회색 배경 */
-  text-decoration: line-through; /* 취소선 */
+/* Style for memorized words */
+.memorizedRow {
+  background-color: #f8f9fa; /* Use the same light gray as header */
+  color: #adb5bd; /* Muted text color */
 }
 
-.checkedTr .td {
-  color: #888;
+.memorizedRow td {
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--primary-color); /* Style the checkbox color */
 }
 
 .deleteButton {
-  background-color: #f44336;
-  color: white;
+  padding: 8px 15px;
+  font-size: 0.9rem;
+  background-color: var(--danger-color);
+  color: #fff;
   border: none;
-  padding: 8px 12px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 14px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
 }
 
 .deleteButton:hover {
-  background-color: #da190b;
+  background-color: var(--danger-hover-color);
 }
 
-.emptyMessage {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 1.2rem;
+.deleteButton:active {
+  transform: scale(0.98);
 }

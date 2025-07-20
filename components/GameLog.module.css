@@ -1,0 +1,45 @@
+/* components/GameLog.module.css */
+
+.logContainer {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border: 1px solid rgb(var(--tile-border));
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  height: 100%;
+}
+
+.logHeader {
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgb(var(--tile-border));
+  font-size: 1.25rem;
+  color: var(--foreground-rgb); /* Dark gray header */
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.logMessages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.logMessage {
+  margin: 0 0 0.5rem 0;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border-left: 4px solid #ced4da; /* Light gray border */
+}
+
+.emptyLog {
+  color: #6c757d;
+  text-align: center;
+  margin-top: 2rem;
+}
