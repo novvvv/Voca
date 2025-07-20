@@ -1,8 +1,9 @@
 "use client";
 
 import React from 'react';
-import { deleteWord, toggleWordMemorized } from '@/lib/words';
+import { deleteWord, toggleWordMemorized, exportWordsToCsv } from '@/lib/words';
 import styles from './WordTable.module.css';
+
 
 export default function WordTable({ words, wordbookName }) {
 
@@ -16,12 +17,38 @@ export default function WordTable({ words, wordbookName }) {
     toggleWordMemorized(wordId, wordbookName);
   };
 
+  const handleExportCsv = () => {
+       const csvContent = exportWordsToCsv(wordbookName);
+       if (csvContent) {
+         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        if (link.download !== undefined) { // Feature detection for download attribute
+          const url = URL.createObjectURL(blob);
+          link.setAttribute('href', url);
+          link.setAttribute('download', `${wordbookName}_단어장.csv`);
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      } else {
+        alert('내보낼 단어가 없습니다.');
+      }
+  };
+
   if (!words || words.length === 0) {
     return <p>단어장에 단어가 없습니다. 위에서 단어를 추가해보세요.</p>;
   }
 
+  {/* csv 내보내기 로직 */}
   return (
-    <table className={styles.table}>
+    <>
+      <div style={{ textAlign: 'right', marginBottom: '1rem' }}>
+        <button onClick={handleExportCsv} className={styles.exportButton}>
+          CSV로 내보내기
+        </button>
+      </div>
+      <table className={styles.table}>
       <thead>
         <tr>
           <th className={styles.thNumber}>번호</th>
@@ -61,5 +88,6 @@ export default function WordTable({ words, wordbookName }) {
         ))}
       </tbody>
     </table>
+      </>
   );
 }

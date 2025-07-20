@@ -1,7 +1,7 @@
 /* components/WordTable.module.css */
 
 .table {
-  width: 100%;
+  width: 150%;
   border-collapse: collapse;
   margin-top: 2rem;
   background-color: #fff;
@@ -25,8 +25,8 @@
 }
 
 /* Column-specific styles */
-.thNumber { width: 5%; }
-.thCheck { width: 5%; }
+.thNumber { width: 7%; }
+.thCheck { width: 7%; }
 .thDate { width: 15%; }
 .thAction { width: 10%; }
 
@@ -76,5 +76,24 @@
 }
 
 .deleteButton:active {
+  transform: scale(0.98);
+}
+
+.exportButton {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #007bff; /* Bootstrap primary blue */
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.exportButton:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.exportButton:active {
   transform: scale(0.98);
 }
