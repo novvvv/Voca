@@ -8,16 +8,25 @@ import Papa from 'papaparse'; // papaparse import
 import styles from './table/table.module.css'; // 기존 스타일 재활용
 
 export default function HomePage() {
+
+  // ✨1.state✨
+  /**
+   * wordbookNames - localStorage에 저장된 모든 단어장 이름 배열을 저장 
+   * newWordBookName - '단어장 추가' input Filed Value 관리 
+   * csvFile - 단어장 csvFile 상태 관리 
+   */
   const [wordbookNames, setWordbookNames] = useState([]);
   const [newWordbookName, setNewWordbookName] = useState('');
-  const [csvFile, setCsvFile] = useState(null); // CSV 파일 상태 추가
+  const [csvFile, setCsvFile] = useState(null); 
   const router = useRouter();
 
+  // ✨2.Method
   const loadWordbookNames = useCallback(() => {
     const names = getWordbookNames();
     setWordbookNames(names);
   }, []);
 
+  // ✨3.Method
   useEffect(() => {
     loadWordbookNames();
     

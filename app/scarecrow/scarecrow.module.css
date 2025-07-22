@@ -96,3 +96,20 @@
 .button:active {
   transform: scale(0.98);
 }
+
+.progressBarContainer {
+  width: 100%;
+  height: 15px;
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.progressBarFill {
+  height: 100%;
+  background-color: #4CAF50; /* Green color for the progress */
+  border-radius: 8px;
+  transition: width 0.3s ease-in-out;
+}
