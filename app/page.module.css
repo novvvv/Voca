@@ -1,0 +1,78 @@
+.container {
+  display: flex;
+  flex-direction: column; /* 요소들을 세로로 정렬 */
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f0f2f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.titleContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* 이미지와 텍스트 사이 간격 */
+  margin-bottom: 2rem;
+}
+
+.logo {
+  width: 130px; /* 로고 이미지 크기 */
+  height: 130px;
+  border-radius: 50%; /* 원형으로 만들기 */
+}
+
+.title {
+  font-size: 4rem;
+  color: #2c3e50;
+  margin: 0; /* h1의 기본 마진 제거 */
+}
+
+.formContainer {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.input {
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 8px;
+  width: 300px;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.button {
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #3498db;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none; /* For Link component */
+  display: inline-block; /* For Link component */
+}
+
+.button:hover {
+  background-color: #2980b9;
+}
+
+.manageButtonContainer {
+  margin-top: 2rem;
+}
+
+.manageButton {
+  background-color: #2ecc71;
+}
+
+.manageButton:hover {
+  background-color: #27ae60;
+}

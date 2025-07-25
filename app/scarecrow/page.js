@@ -17,6 +17,10 @@ const monsters = [
   { id: 5, image: '/Monster/hidden_monster5.png', damagedImage: '/Monster/hidden_monster5_damaged.png' },
   { id: 6, image: '/Monster/hidden_monster6.png', damagedImage: '/Monster/hidden_monster6_damaged.png' },
   { id: 7, image: '/Monster/hidden_monster7.png', damagedImage: '/Monster/hidden_monster7_damaged.png' },
+  { id: 8, image: '/Monster/hidden_monster8.png', damagedImage: '/Monster/hidden_monster8_damaged.png' },
+  { id: 9, image: '/Monster/hidden_monster9.png', damagedImage: '/Monster/hidden_monster9_damaged.png' },
+  { id: 10, image: '/Monster/hidden_monster10.png', damagedImage: '/Monster/hidden_monster10_damaged.png' },
+  { id: 11, image: '/Monster/hidden_monster11.png', damagedImage: '/Monster/hidden_monster11_damaged.png' },
 ];
 
 const playerImage = '/Monster/123.jpg';
