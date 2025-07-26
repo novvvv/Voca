@@ -22,7 +22,17 @@ export default function HomePage() {
 
   return (
     <div className={styles.container}>
+      <div className={styles.topRightButtons}>
+        <Link href="#" className={styles.iconButton}>
+          <Image src="/etc/login.png" alt="로그인" width={40} height={40} />
+        </Link>
+        <Link href="#" className={styles.iconButton}>
+          <Image src="/etc/setting.png" alt="설정" width={40} height={40} />
+        </Link>
+      </div>
+      
       <div className={styles.mainContentWrapper}>
+
         <div className={styles.titleContainer}>
           <img src="/img/lacuns.jpg" alt="Vocoon Logo" className={styles.logo} />
           <h1 className={styles.title}>Vocoon</h1>
