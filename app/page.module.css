@@ -98,7 +98,9 @@
 }
 
 .manageButtonContainer {
-  margin-top: 2rem;
+  margin-top: 1rem;
+  display: flex; /* 버튼들을 가로로 정렬 */
+  gap: 20px; /* 버튼 사이 간격 */
 }
 
 .manageButton {
@@ -110,6 +112,28 @@
 .manageButton:hover {
   background-color: transparent; /* 호버 시 배경 없음 */
   color: #2c3e50; /* 호버 시 글자색: 검정 */
+}
+
+.imageButton {
+  /* 기존 버튼 스타일 제거 */
+  background: none;
+  border: none;
+  padding: 0;
+  /* 이미지 자체처럼 보이도록 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.imageButton:hover {
+  transform: scale(1.05);
+  background: none; /* 호버 시 배경색 제거 */
+}
+
+.imageButton:active {
+  transform: scale(0.95);
 }
 
 .footer {

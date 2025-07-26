@@ -1,13 +1,11 @@
-// app/scarecrow/page.js
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
-import { getWords, saveWordsForBook } from '@/lib/words';
+import Image from 'next/image'; // Image 컴포넌트 임포트
+import { getAllUnmemorizedWords, saveWordsForBook } from '@/lib/words';
 import GameLog from '@/components/GameLog';
-import styles from './scarecrow.module.css';
+import styles from './unmemorized.module.css';
 
 const monsters = [
   { id: 1, image: '/Monster/hidden_monster1.png', damagedImage: '/Monster/hidden_monster1_damaged.png' },
@@ -23,26 +21,19 @@ const monsters = [
   { id: 11, image: '/Monster/hidden_monster11.png', damagedImage: '/Monster/hidden_monster11_damaged.png' },
 ];
 
-const playerImage = '/Monster/123.jpg';
+const playerImage = '/img/lacun.png';
 
-export default function ScarecrowPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const wordbookName = searchParams.get('wordbook');
-  const practiceMode = searchParams.get('mode') || 'all';
-
+export default function UnmemorizedGamePage() {
   const [sessionWords, setSessionWords] = useState([]);
   const [practiceList, setPracticeList] = useState([]);
   const [logs, setLogs] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentMonster, setCurrentMonster] = useState(null);
-  const [monsterImage, setMonsterImage] = useState('');
+  const [currentMonster, setCurrentMonster] = useState(null); // 몬스터 상태 추가
+  const [monsterImage, setMonsterImage] = useState(''); // 몬스터 이미지 상태 추가
   const [showMeaning, setShowMeaning] = useState(false);
   const [displayWord, setDisplayWord] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showLogs, setShowLogs] = useState(true);
-  const [autoAdvanceInterval, setAutoAdvanceInterval] = useState(3);
-  const [isAutoAdvanceActive, setIsAutoAdvanceActive] = useState(false);
 
   const addLog = useCallback((message) => {
     const timestamp = new Date().toLocaleTimeString();
@@ -55,31 +46,27 @@ export default function ScarecrowPage() {
     setDisplayWord(wordToDisplay);
     setCurrentIndex(index);
     addLog(`다음 단어: "${wordToDisplay.word}"`);
-    const newMonster = monsters[Math.floor(Math.random() * monsters.length)];
+    const newMonster = monsters[Math.floor(Math.random() * monsters.length)]; // 몬스터 선택
     setCurrentMonster(newMonster);
     setMonsterImage(newMonster.image);
     setShowMeaning(false);
   }, [addLog]);
 
   useEffect(() => {
-    if (!wordbookName) {
-      setIsLoading(false);
-      return;
-    }
-    addLog(`'${wordbookName}' 단어장으로 게임을 시작합니다. (${practiceMode} 모드)`);
-    const allWordsForBook = getWords(wordbookName);
-    setSessionWords(JSON.parse(JSON.stringify(allWordsForBook)));
-    let filteredWords = practiceMode === 'unmemorized'
-      ? allWordsForBook.filter(word => !word.isMemorized)
-      : allWordsForBook;
+    addLog("모든 단어장의 미암기 단어 연습을 시작합니다.");
+    const allUnmemorized = getAllUnmemorizedWords();
+    setSessionWords(JSON.parse(JSON.stringify(allUnmemorized)));
+    const filteredWords = allUnmemorized.sort(() => Math.random() - 0.5); // 무작위로 섞기
     setPracticeList(filteredWords);
+
     if (filteredWords.length > 0) {
       startNewRound(0, filteredWords);
     } else {
       setDisplayWord(null);
+      addLog("연습할 미암기 단어가 없습니다.");
     }
     setIsLoading(false);
-  }, [wordbookName, practiceMode, addLog, startNewRound]);
+  }, [addLog, startNewRound]);
 
   const handleNext = useCallback(() => {
     if (practiceList.length === 0) return;
@@ -87,11 +74,17 @@ export default function ScarecrowPage() {
     startNewRound(nextIndex, practiceList);
   }, [currentIndex, practiceList, startNewRound]);
 
-  const handleShowMeaningAndDamage = useCallback(() => {
+  const handlePrevious = useCallback(() => {
+    if (practiceList.length === 0) return;
+    const prevIndex = (currentIndex - 1 + practiceList.length) % practiceList.length;
+    startNewRound(prevIndex, practiceList);
+  }, [currentIndex, practiceList, startNewRound]);
+
+  const handleShowMeaningAndMarkUnmemorized = useCallback(() => {
     if (!showMeaning) {
       addLog(`"${displayWord.word}"의 뜻을 확인했습니다.`);
       setShowMeaning(true);
-      if (currentMonster) {
+      if (currentMonster) { // 몬스터 데미지 이미지로 변경
         setMonsterImage(currentMonster.damagedImage);
       }
     }
@@ -104,11 +97,11 @@ export default function ScarecrowPage() {
     }
   }, [addLog, currentMonster, displayWord, sessionWords, showMeaning]);
 
-  const handleMemorizeWord = useCallback(() => {
+  const handleMarkAsMemorized = useCallback(() => {
     if (displayWord) {
       if (!showMeaning) {
         setShowMeaning(true);
-        if (currentMonster) setMonsterImage(currentMonster.damagedImage);
+        if (currentMonster) setMonsterImage(currentMonster.damagedImage); // 몬스터 데미지 이미지로 변경
       }
       addLog(`"${displayWord.word}" 단어를 암기했습니다!`);
       const updatedSessionWords = sessionWords.map(w =>
@@ -118,62 +111,33 @@ export default function ScarecrowPage() {
     }
   }, [addLog, currentMonster, displayWord, sessionWords, showMeaning]);
 
-  useEffect(() => {
-    if (isAutoAdvanceActive && displayWord) {
-      const meaningTimeout = setTimeout(() => {
-        addLog(`"${displayWord.word}"의 뜻을 자동으로 확인했습니다.`);
-        setShowMeaning(true);
-        if (currentMonster) {
-          setMonsterImage(currentMonster.damagedImage);
-        }
-      }, autoAdvanceInterval * 1000);
-
-      const nextWordTimeout = setTimeout(() => {
-        handleNext();
-      }, autoAdvanceInterval * 2000);
-
-      return () => {
-        clearTimeout(meaningTimeout);
-        clearTimeout(nextWordTimeout);
-      };
-    }
-  }, [isAutoAdvanceActive, autoAdvanceInterval, currentIndex, displayWord, currentMonster, addLog, handleNext]);
-
-  const handlePrevious = useCallback(() => {
-    if (practiceList.length === 0) return;
-    const prevIndex = (currentIndex - 1 + practiceList.length) % practiceList.length;
-    startNewRound(prevIndex, practiceList);
-  }, [currentIndex, practiceList, startNewRound]);
-
-
-  // ✨ handleEndSessionAndSave - 게임 종료 및 저장 핸들러 ✨ 
   const handleEndSessionAndSave = useCallback(() => {
-    addLog("게임을 종료하고 모든 변경사항을 저장합니다.");
-    if (wordbookName) {
-      saveWordsForBook(wordbookName, sessionWords);
+    addLog("연습을 종료하고 모든 변경사항을 저장합니다.");
+    const wordbooksToSave = {};
+    sessionWords.forEach(word => {
+      if (!wordbooksToSave[word.wordbookName]) {
+        wordbooksToSave[word.wordbookName] = [];
+      }
+      wordbooksToSave[word.wordbookName].push(word);
+    });
+
+    for (const wordbookName in wordbooksToSave) {
+      saveWordsForBook(wordbookName, wordbooksToSave[wordbookName]);
     }
-    router.push('/wordbooks');
-  }, [addLog, router, sessionWords, wordbookName]);
+    // 저장 후 메인 페이지로 이동
+    window.location.href = '/';
+  }, [addLog, sessionWords]);
 
   if (isLoading) {
     return <div className={styles.message}>로딩 중...</div>;
   }
 
-  if (!wordbookName) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.message}>연습할 단어장을 선택해주세요.</div>
-        <Link href="/"><button className={styles.button}>메인으로 돌아가기</button></Link>
-      </div>
-    );
-  }
-
   return (
     <div className={styles.mainContainer}>
       <div className={styles.gameArea}>
-        <h1>연습 모드: {wordbookName} ({practiceMode === 'all' ? '전체' : '미암기'})</h1>
+        <h1>모든 단어장 미암기 단어 연습</h1>
         {practiceList.length === 0 ? (
-          <div className={styles.message}>연습할 단어가 없습니다.</div>
+          <div className={styles.message}>연습할 미암기 단어가 없습니다.</div>
         ) : (
           <>
             {displayWord && <p>{`${currentIndex + 1} / ${practiceList.length}`}</p>}
@@ -183,9 +147,9 @@ export default function ScarecrowPage() {
                 style={{ width: `${((currentIndex + 1) / practiceList.length) * 100}%` }}
               ></div>
             </div>
-            <div className={styles.battleContainer}>
+            <div className={styles.battleContainer}> {/* 몬스터와 플레이어 컨테이너 추가 */}
               <div className={styles.playerContainer}>
-                <Image src={playerImage} alt="Player" width={280} height={0} />
+                <Image src={playerImage} alt="Player" width={280} height={280} />
               </div>
               <div className={styles.monsterContainer}>
                 {monsterImage && <Image src={monsterImage} alt="Monster" width={280} height={280} />}
@@ -198,21 +162,9 @@ export default function ScarecrowPage() {
             <div>
               <button onClick={handlePrevious} className={styles.button}>이전 단어</button>
               <button onClick={handleNext} className={styles.button}>다음 단어</button>
-              <button onClick={handleShowMeaningAndDamage} className={styles.button}>모름</button>
-              <button onClick={handleMemorizeWord} className={styles.button}>암기함</button>
-              <button onClick={handleEndSessionAndSave} className={styles.button}>게임 종료 및 저장</button>
-            </div>
-            <div style={{ marginTop: '10px' }}>
-              <input
-                type="number"
-                value={autoAdvanceInterval}
-                onChange={(e) => setAutoAdvanceInterval(Number(e.target.value))}
-                min="1"
-                style={{ marginRight: '10px', width: '60px' }}
-              />
-              <button onClick={() => setIsAutoAdvanceActive(!isAutoAdvanceActive)} className={styles.button}>
-                {isAutoAdvanceActive ? '자동 넘김 중지' : '자동 넘김 시작'}
-              </button>
+              <button onClick={handleShowMeaningAndMarkUnmemorized} className={styles.button}>모름</button>
+              <button onClick={handleMarkAsMemorized} className={styles.button}>암기함</button>
+              <button onClick={handleEndSessionAndSave} className={styles.button}>연습 종료 및 저장</button>
             </div>
           </>
         )}

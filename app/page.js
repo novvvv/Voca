@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { addWordbook } from '@/lib/words';
 import styles from './page.module.css';
 
@@ -23,8 +24,8 @@ export default function HomePage() {
     <div className={styles.container}>
       <div className={styles.mainContentWrapper}>
         <div className={styles.titleContainer}>
-          <img src="/img/lacuns.jpg" alt="Vocun Logo" className={styles.logo} />
-          <h1 className={styles.title}>Vocun</h1>
+          <img src="/img/lacuns.jpg" alt="Vocoon Logo" className={styles.logo} />
+          <h1 className={styles.title}>Vocoon</h1>
         </div>
         
         <div className={styles.formContainer}>
@@ -42,8 +43,11 @@ export default function HomePage() {
         </div>
 
         <div className={styles.manageButtonContainer}>
-          <Link href="/wordbooks" className={`${styles.button} ${styles.manageButton}`}>
-            단어장 관리
+          <Link href="/wordbooks" className={`${styles.button} ${styles.manageButton} ${styles.imageButton}`}>
+            <Image src="/etc/folder.png" alt="단어장 관리" width={70} height={70} />
+          </Link>
+          <Link href="/game/unmemorized" className={`${styles.button} ${styles.manageButton} ${styles.imageButton}`}>
+            <Image src="/etc/plays.png" alt="미암기 단어 연습" width={70} height={70} />
           </Link>
         </div>
       </div>
