@@ -34,6 +34,8 @@ export default function UnmemorizedGamePage() {
   const [displayWord, setDisplayWord] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showLogs, setShowLogs] = useState(true);
+  const [autoAdvanceInterval, setAutoAdvanceInterval] = useState(3);
+  const [isAutoAdvanceActive, setIsAutoAdvanceActive] = useState(false);
 
   const addLog = useCallback((message) => {
     const timestamp = new Date().toLocaleTimeString();
@@ -111,6 +113,27 @@ export default function UnmemorizedGamePage() {
     }
   }, [addLog, currentMonster, displayWord, sessionWords, showMeaning]);
 
+  useEffect(() => {
+    if (isAutoAdvanceActive && displayWord) {
+      const meaningTimeout = setTimeout(() => {
+        addLog(`"${displayWord.word}"의 뜻을 자동으로 확인했습니다.`);
+        setShowMeaning(true);
+        if (currentMonster) {
+          setMonsterImage(currentMonster.damagedImage);
+        }
+      }, autoAdvanceInterval * 1000);
+
+      const nextWordTimeout = setTimeout(() => {
+        handleNext();
+      }, autoAdvanceInterval * 2000);
+
+      return () => {
+        clearTimeout(meaningTimeout);
+        clearTimeout(nextWordTimeout);
+      };
+    }
+  }, [isAutoAdvanceActive, autoAdvanceInterval, currentIndex, displayWord, currentMonster, addLog, handleNext]);
+
   const handleEndSessionAndSave = useCallback(() => {
     addLog("연습을 종료하고 모든 변경사항을 저장합니다.");
     const wordbooksToSave = {};
@@ -166,10 +189,22 @@ export default function UnmemorizedGamePage() {
               <button onClick={handleMarkAsMemorized} className={styles.button}>암기함</button>
               <button onClick={handleEndSessionAndSave} className={styles.button}>연습 종료 및 저장</button>
             </div>
+            <div style={{ marginTop: '10px' }}>
+              <input
+                type="number"
+                value={autoAdvanceInterval}
+                onChange={(e) => setAutoAdvanceInterval(Number(e.target.value))}
+                min="1"
+                style={{ marginRight: '10px', width: '60px' }}
+              />
+              <button onClick={() => setIsAutoAdvanceActive(!isAutoAdvanceActive)} className={styles.button}>
+                {isAutoAdvanceActive ? '자동 넘김 중지' : '자동 넘김 시작'}
+              </button>
+            </div>
           </>
         )}
       </div>
-      <div className={styles.logArea}>
+      {/* <div className={styles.logArea}>
         <button
           onClick={() => setShowLogs(!showLogs)}
           className={styles.button}
@@ -178,7 +213,7 @@ export default function UnmemorizedGamePage() {
           {showLogs ? '로그 숨기기' : '로그 보기'}
         </button>
         {showLogs && <GameLog logs={logs} />}
-      </div>
+      </div> */}
     </div>
   );
 }

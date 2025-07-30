@@ -217,7 +217,7 @@ export default function ScarecrowPage() {
           </>
         )}
       </div>
-      <div className={styles.logArea}>
+      {/* <div className={styles.logArea}>
         <button
           onClick={() => setShowLogs(!showLogs)}
           className={styles.button}
@@ -226,7 +226,7 @@ export default function ScarecrowPage() {
           {showLogs ? '로그 숨기기' : '로그 보기'}
         </button>
         {showLogs && <GameLog logs={logs} />}
-      </div>
+      </div> */}
     </div>
   );
 }

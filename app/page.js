@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import { addWordbook } from '@/lib/words';
 import styles from './page.module.css';
 
 export default function HomePage() {
-
+  const { data: session } = useSession();
   const [newWordbookName, setNewWordbookName] = useState('');
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleAddWordbook = () => {
     if (newWordbookName.trim() === '') {
@@ -20,19 +22,41 @@ export default function HomePage() {
     setNewWordbookName('');
   };
 
+  const LoginModal = () => (
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContent}>
+        <button onClick={() => setShowLoginModal(false)} className={styles.closeButton}>X</button>
+        <h2>로그인</h2>
+        <p>Google 계정으로 로그인하여 단어장을 안전하게 보관하세요.</p>
+        <button onClick={() => signIn('google')} className={styles.googleLoginButton}>
+          <Image src="/google-logo.svg" alt="Google" width={20} height={20} />
+          <span>Google 계정으로 로그인</span>
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className={styles.container}>
       <div className={styles.topRightButtons}>
-        <Link href="#" className={styles.iconButton}>
-          <Image src="/etc/login.png" alt="로그인" width={40} height={40} />
-        </Link>
+        {session ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Image src={session.user.image} alt={session.user.name} width={40} height={40} style={{ borderRadius: '50%' }} />
+            <button onClick={() => signOut()} className={styles.logoutButton}>로그아웃</button>
+          </div>
+        ) : (
+          <div onClick={() => setShowLoginModal(true)} className={styles.iconButton} style={{ cursor: 'pointer' }}>
+            <Image src="/etc/login.png" alt="로그인" width={40} height={40} />
+          </div>
+        )}
         <Link href="#" className={styles.iconButton}>
           <Image src="/etc/setting.png" alt="설정" width={40} height={40} />
         </Link>
       </div>
+
+      {showLoginModal && <LoginModal />}
       
       <div className={styles.mainContentWrapper}>
-
         <div className={styles.titleContainer}>
           <img src="/img/lacuns.jpg" alt="Vocoon Logo" className={styles.logo} />
           <h1 className={styles.title}>Vocoon</h1>
